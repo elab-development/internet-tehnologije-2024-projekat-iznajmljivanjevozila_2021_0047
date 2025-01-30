@@ -16,10 +16,10 @@ class User extends Authenticatable
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-    use HasProfilePhoto;
+    
     use Notifiable;
-    use TwoFactorAuthenticatable;
-    protected $table = 'users';
+    
+    protected $table = 'korisnik';
     /**
      * The attributes that are mass assignable.
      *
