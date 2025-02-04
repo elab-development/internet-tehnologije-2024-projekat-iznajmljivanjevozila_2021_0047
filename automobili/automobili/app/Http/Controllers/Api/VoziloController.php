@@ -35,8 +35,88 @@ class VoziloController extends Controller
          // Vraćanje sa porukom o uspehu
          return response()->json(['message' => 'Vozilo je uspešno dodato.'], 201);
         }catch (\Exception $e) {
-            // Prikazivanje greške ako nešto pođe po zlu
+            // Prikazivanje greške ako nešto pođe po zlu (nisu sva polja popunjena)
             return response()->json(['message' => 'Dodavanje vozila nije uspelo. Proverite unos.'], 500);
         }
     }
+    public function search(Request $request)
+    {
+        $query = Vozilo::query();
+
+        if ($request->filled('naziv')) {
+            $query->where('naziv', 'like', '%' . $request->naziv . '%');
+        }
+
+        if ($request->filled('god_proizvodnje')) {
+            $query->where('god_proizvodnje', $request->god_proizvodnje);
+        }
+
+        if ($request->filled('cena_po_danu')) {
+            $query->where('cena_po_danu', '<=', $request->cena_po_danu);
+        }
+
+        $vozila = $query->get();
+
+        if ($vozila->isEmpty()) {
+            return response()->json(['message' => 'Nijedno vozilo nije pronađeno.'], 404);
+        }
+
+        return response()->json($vozila);
+    }
+    public function update(Request $request, $id)
+    {
+        // Pronađi vozilo prema ID-u
+    $vozilo = Vozilo::find($id);
+
+    // Proveri da li vozilo postoji
+    if (!$vozilo) {
+        return response()->json(['poruka' => 'Vozilo nije pronađeno.'], 404);
+    }
+
+         // Ažuriraj polja samo ako su uneta
+    if ($request->filled('naziv')) {
+        $vozilo->naziv = $request->naziv;
+    }
+
+    if ($request->filled('proizvodjac')) {
+        $vozilo->proizvodjac = $request->proizvodjac;
+    }
+
+    if ($request->filled('god_proizvodnje')) {
+        $vozilo->god_proizvodnje = $request->god_proizvodnje;
+    }
+
+    if ($request->filled('cena_po_danu')) {
+        $vozilo->cena_po_danu = $request->cena_po_danu;
+    }
+
+    if ($request->filled('tip_vozila')) {
+        $vozilo->tip_vozila = $request->tip_vozila;
+    }
+
+    if ($request->filled('status')) {
+        $vozilo->status = $request->status;
+    }
+
+    // Sačuvaj izmene
+    $vozilo->save();
+
+    return response()->json(['poruka' => 'Vozilo je uspešno ažurirano.', 'vozilo' => $vozilo]);
+    }
+    public function destroy($id)
+    {
+        // Pronađi vozilo po ID-u
+        $vozilo = Vozilo::find($id);
+
+        // Ako vozilo nije pronađeno, vrati grešku
+        if (!$vozilo) {
+            return response()->json(['message' => 'Vozilo nije pronađeno.'], 404);
+        }
+        // obriši vozilo
+        $vozilo->delete();
+
+        // Vrati poruku o uspešnom brisanju
+        return response()->json(['message' => 'Vozilo je uspešno obrisano.'], 200);
+    }
+   
 }

@@ -17,3 +17,10 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/users', [AdminController::class, 'getUsers']);
 
 Route::post('/vozilo/dodaj', [VoziloController::class, 'store']);
+
+// Ruta za pretragu vozila 
+Route::get('/vozilo', [VoziloController::class, 'search']);
+ 
+
+Route::put('vozilo/{id}', [VoziloController::class, 'update']);
+Route::delete('voziloBrisanje/{id}', [VoziloController::class, 'destroy']);

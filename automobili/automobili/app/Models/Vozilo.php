@@ -11,7 +11,7 @@ class Vozilo extends Model
 
     protected $table='vozilo';
     public $timestamps = false;
-    protected $primatyKey='id_vozila';
+    protected $primaryKey='id_vozila';
     protected $fillable=[
         'naziv',
         'proizvodjac',
