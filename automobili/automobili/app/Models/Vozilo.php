@@ -20,4 +20,9 @@ class Vozilo extends Model
         'tip_vozila',
         'status'
     ];
+    public function rezervacije()
+    {
+        return $this->hasMany(Rezervacija::class, 'id_vozila', 'id_vozila');
+    }
+    
 }
