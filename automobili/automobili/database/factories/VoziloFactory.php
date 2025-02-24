@@ -22,7 +22,7 @@ class VoziloFactory extends Factory
             'god_proizvodnje' => $this->faker->numberBetween(2000, 2023),
             'cena_po_danu' => $this->faker->numberBetween(30, 100),
             'tip_vozila' => $this->faker->randomElement(['SUV', 'sedan', 'kombi', 'hatchback']),
-            'status' => $this->faker->randomElement(['dostupno','rezervisano','u servisu']),
+            'status' => $this->faker->randomElement(['dostupno','u servisu']),
         ];
     }
 }

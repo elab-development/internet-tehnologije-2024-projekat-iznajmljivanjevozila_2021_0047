@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Rezervacija;
+use App\Models\User;
 use App\Models\Vozilo;
 use Carbon\Carbon;
 /**
@@ -19,6 +20,9 @@ class RezervacijaFactory extends Factory
      */
     public function definition(): array
     {
+        //Uzmi random korisnika iz baze
+        $korisnik = User::inRandomOrder()->first() ?? User::factory()->create();
+
         // Uzmi random vozilo iz baze
         $vozilo = Vozilo::inRandomOrder()->first() ?? Vozilo::factory()->create();
 
@@ -32,6 +36,7 @@ class RezervacijaFactory extends Factory
         // Izračunaj cenu ukupno (cena po danu * broj dana)
         $cena_ukupno = $vozilo->cena_po_danu * max($broj_dana, 1); // Osiguraj da nije 0
         return [
+            'id_korisnika' => $korisnik->id,
             'id_vozila' => $vozilo->id_vozila,
             'datum_pocetka' => $datum_pocetka,
             'datum_zavrsetka' => $datum_zavrsetka,

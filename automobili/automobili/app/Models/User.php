@@ -58,4 +58,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function rezervacije()
+{
+    return $this->hasMany(Rezervacija::class, 'id_korisnika', 'id');
+}
 }

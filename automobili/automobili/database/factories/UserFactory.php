@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'prezime'=> fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'lozinka' => static::$password ??= Hash::make('password'),
-            'tip_korisnika'=>fake()->randomElement(['autentifikovan', 'neregistrovani', 'admin']),
+            'tip_korisnika'=>fake()->randomElement(['autentifikovan', 'admin']),
             //'two_factor_secret' => null,
             //'two_factor_recovery_codes' => null,
             

@@ -39,10 +39,12 @@ class LoginController extends Controller
         // Proverite da li lozinka odgovara hash-ovanoj lozinci
         if (Hash::check($request->lozinka, $user->lozinka)) {
             // Uspešna prijava
+            $token = $user->createToken('token')->plainTextToken;
             Auth::login($user);  // Logujte korisnika
             return response()->json([
                 'status' => 'success',
                 'message' => 'Uspešna prijava!',
+                'token' => $token,
             ], 200);
         }
 
