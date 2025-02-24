@@ -14,13 +14,20 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [RegistrationController::class, 'register']);
 
 Route::post('/login', [LoginController::class, 'login']);
+//Route::get('/users', [AdminController::class, 'getUsers']);
+//Route::get('/users', [AdminController::class, 'getUsers'])
+//   ->middleware('auth:sanctum');
 
 Route::get('/users', function () {
     
     if (auth()->check()) {
         if (auth()->user()->tip_korisnika === 'admin') {
             // Vraćanje svih korisnika u bazi
-            return response()->json(App\Models\User::all());
+           return app(AdminController::class)->getUsers();
+           //return action([App\Http\Controllers\Api\AdminController::class, 'getUsers']);
+           //return response()->json(App\Models\User::all());
+        //    $controller = new \App\Http\Controllers\Api\AdminController();
+        //    return $controller->getUsers();
         }
        
     }
@@ -29,13 +36,37 @@ Route::get('/users', function () {
 })->middleware('auth:sanctum');
 
 
-Route::post('/vozilo/dodaj', [VoziloController::class, 'store']);
-
+//Route::post('/vozilo/dodaj', [VoziloController::class, 'store']);
+Route::post('/vozilo/dodaj', function () {
+    
+    if (auth()->check()) {
+        if (auth()->user()->tip_korisnika === 'admin') {
+            // Poziv metode store iz VoziloController-a
+            return app(VoziloController::class)->store(request()); // prosleđivanje Request objekta
+        }
+    }
+    
+    // Ako korisnik nije admin, vrati 403
+    return response()->json(['message' => 'Forbidden'], 403);
+})->middleware('auth:sanctum');
 // Ruta za pretragu vozila 
 Route::get('/vozilo', [VoziloController::class, 'search']);
  
 
-Route::put('vozilo/{id}', [VoziloController::class, 'update']);
-Route::delete('voziloBrisanje/{id}', [VoziloController::class, 'destroy']);
+//Route::put('vozilo/{id}', [VoziloController::class, 'update']);
+Route::put('vozilo/{id}', function ($id, \Illuminate\Http\Request $request) {
+    if (auth()->check() && auth()->user()->tip_korisnika === 'admin') {
+        return app(VoziloController::class)->update($request, $id);
+    }
+    return response()->json(['message' => 'Forbidden'], 403);
+})->middleware('auth:sanctum');
+
+//Route::delete('voziloBrisanje/{id}', [VoziloController::class, 'destroy']);
+Route::delete('voziloBrisanje/{id}', function ($id) {
+    if (auth()->check() && auth()->user()->tip_korisnika === 'admin') {
+        return app(VoziloController::class)->destroy($id);
+    }
+    return response()->json(['message' => 'Forbidden'], 403);
+})->middleware('auth:sanctum');
 Route::post('/rezervacija', [RezervacijaController::class, 'store']);
 Route::get('rezervacija', [RezervacijaController::class, 'index']);

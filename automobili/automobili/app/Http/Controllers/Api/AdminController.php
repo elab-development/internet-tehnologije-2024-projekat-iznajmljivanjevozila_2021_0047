@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function getUsers(Request $request)
+    public function getUsers()
     {
         // Preuzimanje svih korisnika sa osnovnim informacijama
         $users = User::select('ime','prezime', 'email', 'tip_korisnika')->get();
@@ -24,6 +24,7 @@ class AdminController extends Controller
             'status' => 'success',
             'message' => 'Lista korisnika.',
             'data' => $users,
+           
         ], 200);
     }
 }
