@@ -20,7 +20,7 @@ class RezervacijaController extends Controller
         'datum_pocetka' => 'required|date|after_or_equal:today',
         'datum_zavrsetka' => 'required|date|after:datum_pocetka',
         'id_vozila' => 'required|exists:vozilo,id_vozila',
-        'id_korisnika' => 'required|exists:korisnik,id', // dodati kad odredis rute i tokene
+        //'id_korisnika' => 'required|exists:korisnik,id', // dodati kad odredis rute i tokene
     ]);
    
      
@@ -53,7 +53,7 @@ class RezervacijaController extends Controller
     // Sačuvaj rezervaciju sa korisnikom
     $rezervacija = Rezervacija::create([
         'id_vozila' => $vozilo->id_vozila,
-        'id_korisnika' => $request->id_korisnika,// Povezivanje sa trenutno ulogovanim korisnikom
+        'id_korisnika' => $request->user()->id,// Povezivanje sa trenutno ulogovanim korisnikom
         'datum_pocetka' => $request->datum_pocetka,
         'datum_zavrsetka' => $request->datum_zavrsetka,
         'status_rezervacije' => 'aktivno',
@@ -65,44 +65,44 @@ class RezervacijaController extends Controller
         'rezervacija' => $rezervacija
     ], 201);
 }
-// public function index(Request $request) doradi ovo kad dodas autetifikaciju
-// {
-//     // Dobija rezervacije trenutnog korisnika
-//     $rezervacije = Rezervacija::where('id_korisnika', $request->user()->id)
-//                                ->orderBy('datum_pocetka', 'desc')
-//                                ->get();
-
-//     // Proveri da li postoje rezervacije
-//     if ($rezervacije->isEmpty()) {
-//         return response()->json(['message' => 'Nemate prethodne rezervacije.'], 404);
-//     }
-
-//     // Vrati listu rezervacija
-//     return response()->json(['rezervacije' => $rezervacije], 200);
-// }
-public function index(Request $request)
+public function index(Request $request) //doradi ovo kad dodas autetifikaciju
 {
-    // Uzimamo id_korisnika iz request-a
-    $id_korisnika = $request->input('id_korisnika');
+    // Dobija rezervacije trenutnog korisnika
+    $rezervacije = Rezervacija::where('id_korisnika', $request->user()->id)
+                               ->orderBy('datum_pocetka', 'desc')
+                               ->get();
 
-    // Proveravamo da li korisnik postoji
-    $korisnik = User::find($id_korisnika);
-    
-    if (!$korisnik) {
-        return response()->json(['message' => 'Korisnik nije pronađen'], 404);
-    }
-
-    // Tražimo sve rezervacije korisnika sa povezanim vozilom
-    $rezervacije = Rezervacija::with('vozilo') // Učitavamo povezano vozilo
-        ->where('id_korisnika', $id_korisnika)
-        ->get();
-
-    // Ako korisnik nema rezervacije
+    // Proveri da li postoje rezervacije
     if ($rezervacije->isEmpty()) {
-        return response()->json(['message' => 'Nemate prethodne rezervacije.'], 200);
+        return response()->json(['message' => 'Nemate prethodne rezervacije.'], 404);
     }
 
-    // Vraćamo rezervacije zajedno sa vozilima
+    // Vrati listu rezervacija
     return response()->json(['rezervacije' => $rezervacije], 200);
 }
+// public function index(Request $request)
+// {
+//     // Uzimamo id_korisnika iz request-a
+//     $id_korisnika = $request->input('id_korisnika');
+
+//     // Proveravamo da li korisnik postoji
+//     $korisnik = User::find($id_korisnika);
+    
+//     if (!$korisnik) {
+//         return response()->json(['message' => 'Korisnik nije pronađen'], 404);
+//     }
+
+//     // Tražimo sve rezervacije korisnika sa povezanim vozilom
+//     $rezervacije = Rezervacija::with('vozilo') // Učitavamo povezano vozilo
+//         ->where('id_korisnika', $id_korisnika)
+//         ->get();
+
+//     // Ako korisnik nema rezervacije
+//     if ($rezervacije->isEmpty()) {
+//         return response()->json(['message' => 'Nemate prethodne rezervacije.'], 200);
+//     }
+
+//     // Vraćamo rezervacije zajedno sa vozilima
+//     return response()->json(['rezervacije' => $rezervacije], 200);
+// }
 }

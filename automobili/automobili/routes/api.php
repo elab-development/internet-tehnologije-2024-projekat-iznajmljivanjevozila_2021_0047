@@ -38,7 +38,6 @@ Route::get('/users', function () {
 
 //Route::post('/vozilo/dodaj', [VoziloController::class, 'store']);
 Route::post('/vozilo/dodaj', function () {
-    
     if (auth()->check()) {
         if (auth()->user()->tip_korisnika === 'admin') {
             // Poziv metode store iz VoziloController-a
@@ -49,6 +48,7 @@ Route::post('/vozilo/dodaj', function () {
     // Ako korisnik nije admin, vrati 403
     return response()->json(['message' => 'Forbidden'], 403);
 })->middleware('auth:sanctum');
+   
 // Ruta za pretragu vozila 
 Route::get('/vozilo', [VoziloController::class, 'search']);
  
@@ -68,5 +68,7 @@ Route::delete('voziloBrisanje/{id}', function ($id) {
     }
     return response()->json(['message' => 'Forbidden'], 403);
 })->middleware('auth:sanctum');
-Route::post('/rezervacija', [RezervacijaController::class, 'store']);
-Route::get('rezervacija', [RezervacijaController::class, 'index']);
+Route::post('/rezervacija', [RezervacijaController::class, 'store'])->middleware('auth:sanctum');
+//Route::get('/rezervacijaSve', [RezervacijaController::class, 'index']);
+Route::get('/rezervacijaSve', [RezervacijaController::class, 'index'])
+    ->middleware('auth:sanctum');
