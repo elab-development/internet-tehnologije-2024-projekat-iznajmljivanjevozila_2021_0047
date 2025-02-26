@@ -36,6 +36,7 @@ class RezervacijaController extends Controller
             $query->whereBetween('datum_pocetka', [$request->datum_pocetka, $request->datum_zavrsetka])
                   ->orWhereBetween('datum_zavrsetka', [$request->datum_pocetka, $request->datum_zavrsetka]);
         })
+        ->where('status_rezervacije', '!=', 'otkazano')
         ->doesntExist(); 
 
     if (!$isAvailable) {
@@ -105,4 +106,79 @@ public function index(Request $request) //doradi ovo kad dodas autetifikaciju
 //     // Vraćamo rezervacije zajedno sa vozilima
 //     return response()->json(['rezervacije' => $rezervacije], 200);
 // }
+public function update(Request $request, $id)
+{
+
+    //  Nađi rezervaciju i proveri da li pripada prijavljenom korisniku
+    $rezervacija = Rezervacija::find($id);
+
+    if (!$rezervacija || $rezervacija->id_korisnika !== $request->user()->id) {
+        return response()->json(['message' => 'Nemate dozvolu za izmenu ove rezervacije.'], 403);
+    }
+
+    //  Validacija podataka
+    $validated = $request->validate([
+        'datum_pocetka' => 'required|date|after_or_equal:today',
+        'datum_zavrsetka' => 'required|date|after:datum_pocetka',
+    ]);
+
+    //  Provera dostupnosti vozila za nove datume
+    $isAvailable = Rezervacija::where('id_vozila', $rezervacija->id_vozila)
+        ->where('id_rezervacija', '!=', $rezervacija->id) // Isključujemo trenutnu rezervaciju iz provere
+        ->where(function ($query) use ($request) {
+            $query->whereBetween('datum_pocetka', [$request->datum_pocetka, $request->datum_zavrsetka])
+                  ->orWhereBetween('datum_zavrsetka', [$request->datum_pocetka, $request->datum_zavrsetka]);
+        })
+        ->where('status_rezervacije', '!=', 'otkazano') 
+        ->doesntExist();
+
+    if (!$isAvailable) {
+        return response()->json(['message' => 'Vozilo nije dostupno za izabrane datume.'], 400);
+    }
+
+    // Izračunaj novu cenu (ako je cena po danu promenjiva)
+    $broj_dana = Carbon::parse($request->datum_pocetka)->diffInDays($request->datum_zavrsetka);
+    $cena_ukupno = $rezervacija->vozilo->cena_po_danu * $broj_dana;
+
+    //  Ažuriranje rezervacije
+    $rezervacija->update([
+        'datum_pocetka' => $request->datum_pocetka,
+        'datum_zavrsetka' => $request->datum_zavrsetka,
+        'cena_ukupno' => $cena_ukupno,
+    ]);
+
+    return response()->json([
+        'message' => 'Rezervacija je uspešno izmenjena!',
+        'rezervacija' => $rezervacija
+    ], 200);
+}
+public function cancel($id, Request $request)
+{
+    // Traži rezervaciju prema ID-u
+    $rezervacija = Rezervacija::find($id);
+
+    // Provera da li rezervacija postoji
+    if (!$rezervacija) {
+        return response()->json(['message' => 'Rezervaciju nije moguće pronaći.'], 404);
+    }
+
+    // Provera da li rezervacija pripada trenutnom korisniku
+    if ($rezervacija->id_korisnika !== $request->user()->id) {
+        return response()->json(['message' => 'Nemate pravo da otkažete ovu rezervaciju.'], 403);
+    }
+
+    // Provera da li rezervacija može da bude otkazana
+    // Ako je rezervacija već započela, ne može biti otkazana
+    if (Carbon::now()->greaterThanOrEqualTo(Carbon::parse($rezervacija->datum_pocetka))) {
+        return response()->json(['message' => 'Rezervaciju nije moguće otkazati, već je započela.'], 400);
+    }
+
+    // Promena statusa na "otkazano"
+    $rezervacija->status_rezervacije = 'otkazano';
+    $rezervacija->save(); // Spasavanje promene u bazi
+
+    // Vraćanje odgovora sa porukom
+    return response()->json(['message' => 'Rezervacija je uspešno otkazana.'], 200);
+}
+
 }
