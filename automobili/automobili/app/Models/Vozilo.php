@@ -24,5 +24,9 @@ class Vozilo extends Model
     {
         return $this->hasMany(Rezervacija::class, 'id_vozila', 'id_vozila');
     }
+    public function statistike()
+    {
+        return $this->hasMany(Statistika::class, 'id_vozila', 'id_vozila');
+    }
     
 }
