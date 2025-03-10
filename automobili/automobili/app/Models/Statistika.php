@@ -21,7 +21,9 @@ class Statistika extends Model
         'id_vozila',
         'broj_iznajmljivanja',
         'ukupna_zarada',
-        'prosecan_broj_dana'
+        'prosecan_broj_dana',
+        'datum_pocetka', 
+        'datum_kraja'
     ];
     public function vozilo()
     {

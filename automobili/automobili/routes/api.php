@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RezervacijaController;
 use App\Http\Controllers\Api\VoziloController;
+use App\Http\Controllers\Api\StatistikaVozilaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -77,3 +78,10 @@ Route::put('/rezervacija/{id}', [RezervacijaController::class, 'update'])
 
 Route::put('/rezervacijaOtkazivanje/{id}', [RezervacijaController::class, 'cancel'])
     ->middleware('auth:sanctum');
+    Route::post('/statistika', function (Request $request) {
+        // Proverava da li je korisnik admin pre nego što pozove kontroler
+        if ($request->user()->tip_korisnika === 'admin') {
+            return app(StatistikaVozilaController::class)->statistika($request);
+        }
+        return response()->json(['message' => 'Forbidden'], 403);  // Ako korisnik nije admin
+    })->middleware('auth:sanctum');
