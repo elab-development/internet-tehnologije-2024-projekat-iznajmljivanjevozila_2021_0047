@@ -62,4 +62,8 @@ class User extends Authenticatable
 {
     return $this->hasMany(Rezervacija::class, 'id_korisnika', 'id');
 }
+public function documents()
+{
+    return $this->hasMany(Document::class,'id_korisnika', 'id');
+}
 }

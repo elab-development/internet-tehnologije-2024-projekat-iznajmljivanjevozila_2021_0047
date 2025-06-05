@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\RezervacijaController;
 use App\Http\Controllers\Api\VoziloController;
 use App\Http\Controllers\Api\StatistikaVozilaController;
+use App\Http\Controllers\Api\LogoutController;
+use App\Http\Controllers\Api\DocumentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -85,3 +87,6 @@ Route::put('/rezervacijaOtkazivanje/{id}', [RezervacijaController::class, 'cance
         }
         return response()->json(['message' => 'Forbidden'], 403);  // Ako korisnik nije admin
     })->middleware('auth:sanctum');
+    Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'logout']);
+
+    Route::middleware('auth:sanctum')->post('/upload-document', [DocumentController::class, 'upload']);
