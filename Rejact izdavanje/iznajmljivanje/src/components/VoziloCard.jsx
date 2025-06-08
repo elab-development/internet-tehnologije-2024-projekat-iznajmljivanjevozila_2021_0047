@@ -5,7 +5,7 @@ import '../App.css';
 const VoziloCard = ({ vozilo }) => {
     const slikaUrl = vozilo.slika
         ? `http://127.0.0.1:8000/storage/${vozilo.slika}`
-        : '/default-car.jpeg'; // default slika ako nema
+        : '/default-auto.jpg'; // default slika ako nema
     console.log(vozilo.slika);
     return (
         <div className="vozilo-card">

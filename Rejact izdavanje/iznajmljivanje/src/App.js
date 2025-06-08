@@ -4,8 +4,10 @@ import './App.css';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import NavBar from './components/NavBar';
-import PocetnaStranica from './components/PrikazVozilaStranica';
+import NavBar from './components/NavBar'
+import PocetnaStranica from './components/PocetnaStranica';
+import Home from './components/Home';
+
 
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/pocetna" element={<PocetnaStranica />} />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );

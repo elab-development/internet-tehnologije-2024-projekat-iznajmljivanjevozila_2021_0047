@@ -79,12 +79,34 @@ const NavBar = () => {
         { path: "/pocetna", label: "Pregled vozila" },
         { path: "/login", label: "Login", authRequired: false },
         { path: "/register", label: "Registracija", authRequired: false },
+        { path: "/", label: "Početna" },
     ];
 
     return (
         <nav style={styles.navbar}>
-            <div style={styles.logo}>VoziloNaDan</div>
+            <div style={styles.logo}>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    style={{ marginRight: "10px" }}
+                >
+                    <path d="M5 11h14l1.5-4.5h-17zM7 16c-.83 0-1.5-.67-1.5-1.5S6.17 13 7 13s1.5.67 1.5 1.5S7.83 16 7 16zm10 0c-.83 0-1.5-.67-1.5-1.5S16.17 13 17 13s1.5.67 1.5 1.5S17.83 16 17 16zM18.92 6c-.21-.6-.78-1-1.42-1H6.5c-.64 0-1.21.4-1.42 1L3 11v8c0 .55.45 1 1 1s1-.45 1-1v-1h14v1c0 .55.45 1 1 1s1-.45 1-1v-8l-2.08-5z" />
+                </svg>
+                VoziloNaDan
+            </div>
             <ul style={styles.navLinks}>
+                <li>
+                    <Link
+                        to="/"
+                        style={hovered === "home" ? { ...styles.link, ...styles.linkHover } : styles.link}
+                        onMouseEnter={() => setHovered("home")}
+                        onMouseLeave={() => setHovered(null)}
+                    >
+                        Početna
+                    </Link>
+                </li>
                 <li>
                     <Link
                         to="/pocetna"
