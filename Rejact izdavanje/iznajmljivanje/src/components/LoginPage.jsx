@@ -38,15 +38,26 @@ const LoginPage = () => {
             <form className="login-form" onSubmit={handleLogin}>
                 <h2>Prijava</h2>
                 <div className="form-group">
-                    <label>Email adresa</label>
-                    <input type="email" placeholder="Unesi email" name="email"
-                        onInput={handleInput} />
-
+                    <label htmlFor="email">Email adresa</label>
+                    <input
+                        type="email"
+                        placeholder="Unesi email"
+                        name="email"
+                        id="email"
+                        onInput={handleInput}
+                        required
+                    />
                 </div>
                 <div className="form-group">
-                    <label>Lozinka</label>
-                    <input type="password" placeholder="Unesi lozinku" name="lozinka"
-                        onInput={handleInput} />
+                    <label htmlFor="lozinka">Lozinka</label>
+                    <input
+                        type="password"
+                        placeholder="Unesi lozinku"
+                        name="lozinka"
+                        id="lozinka"
+                        onInput={handleInput}
+                        required
+                    />
                 </div>
                 <button type="submit">Prijavi se</button>
             </form>
