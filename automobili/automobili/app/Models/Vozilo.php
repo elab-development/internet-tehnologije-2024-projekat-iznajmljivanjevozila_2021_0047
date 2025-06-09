@@ -9,16 +9,17 @@ class Vozilo extends Model
 {
     use HasFactory;
 
-    protected $table='vozilo';
+    protected $table = 'vozilo';
     public $timestamps = false;
-    protected $primaryKey='id_vozila';
-    protected $fillable=[
+    protected $primaryKey = 'id_vozila';
+    protected $fillable = [
         'naziv',
         'proizvodjac',
         'god_proizvodnje',
         'cena_po_danu',
         'tip_vozila',
-        'status'
+        'status',
+        'slika'
     ];
     public function rezervacije()
     {
@@ -28,5 +29,4 @@ class Vozilo extends Model
     {
         return $this->hasMany(Statistika::class, 'id_vozila', 'id_vozila');
     }
-    
 }
