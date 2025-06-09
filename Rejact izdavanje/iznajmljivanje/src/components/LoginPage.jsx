@@ -31,6 +31,7 @@ const LoginPage = () => {
             .catch(err => {
                 if (err.response) {
                     console.log(err.response.data);
+
                 } else {
                     console.log(err);
                 }
