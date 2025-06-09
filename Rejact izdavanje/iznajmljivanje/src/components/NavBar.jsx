@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 
@@ -26,6 +26,7 @@ const NavBar = () => {
             .then(response => {
                 console.log("Logout uspešan:", response.data);
                 window.sessionStorage.removeItem("auth_token");
+                setTipKorisnika(null);
                 navigate("/login");
             })
             .catch(error => {
@@ -35,6 +36,29 @@ const NavBar = () => {
                 navigate("/login");
             });
     }
+    const [tipKorisnika, setTipKorisnika] = useState(null);
+
+    useEffect(() => {
+        const token = sessionStorage.getItem("auth_token");
+        if (!token) {
+            setTipKorisnika(null);
+            return;
+        }
+
+        axios.get("/api/user", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                setTipKorisnika(res.data.tip_korisnika);
+
+            })
+            .catch(err => {
+                console.error("Greška pri dohvaćanju korisnika", err);
+            });
+    }, []);
+
 
     const styles = {
         navbar: {
@@ -117,7 +141,18 @@ const NavBar = () => {
                         Pregled vozila
                     </Link>
                 </li>
-
+                {tipKorisnika === "admin" && (
+                    <li>
+                        <Link
+                            to="/admin/korisnici"
+                            style={hovered === "pregled-korisnika" ? { ...styles.link, ...styles.linkHover } : styles.link}
+                            onMouseEnter={() => setHovered("pregled-korisnika")}
+                            onMouseLeave={() => setHovered(null)}
+                        >
+                            Pregled korisnika
+                        </Link>
+                    </li>
+                )}
                 {window.sessionStorage.getItem("auth_token") == null ? (
                     <>
                         <li>

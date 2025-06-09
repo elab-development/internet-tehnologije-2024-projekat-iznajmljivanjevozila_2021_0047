@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar'
 import PocetnaStranica from './components/PocetnaStranica';
 import Home from './components/Home';
+import PrikazKorisnika from './components/PrikazKorisnika';
+
 
 
 
@@ -28,6 +30,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/pocetna" element={<PocetnaStranica />} />
         <Route path="/" element={<Home />} />
+        <Route path="/admin/korisnici" element={<PrikazKorisnika />} />
       </Routes>
     </Router>
   );

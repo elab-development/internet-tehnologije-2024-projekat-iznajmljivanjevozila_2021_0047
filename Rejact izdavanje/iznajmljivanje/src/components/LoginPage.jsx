@@ -16,13 +16,16 @@ const LoginPage = () => {
         setUserData(newUSerData);
 
     }
+
     function handleLogin(e) {
+
         e.preventDefault();
         axios.post("api/login", userData).then(res => {
             console.log(res.data);
             if (res.data.status === "success") {
                 window.sessionStorage.setItem("auth_token", res.data.token);
                 navigate("/");
+                window.location.reload();
             }
         })
             .catch(err => {
