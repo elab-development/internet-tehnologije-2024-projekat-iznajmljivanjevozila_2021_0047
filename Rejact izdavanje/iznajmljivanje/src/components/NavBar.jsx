@@ -153,6 +153,18 @@ const NavBar = () => {
                         </Link>
                     </li>
                 )}
+                {tipKorisnika === "admin" && (
+                    <li>
+                        <Link
+                            to="/admin/dodajVozilo"
+                            style={hovered === "dodaj-vozilo" ? { ...styles.link, ...styles.linkHover } : styles.link}
+                            onMouseEnter={() => setHovered("dodaj-vozilo")}
+                            onMouseLeave={() => setHovered(null)}
+                        >
+                            Dodaj vozilo
+                        </Link>
+                    </li>
+                )}
                 {window.sessionStorage.getItem("auth_token") == null ? (
                     <>
                         <li>

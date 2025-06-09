@@ -8,6 +8,7 @@ import NavBar from './components/NavBar'
 import PocetnaStranica from './components/PocetnaStranica';
 import Home from './components/Home';
 import PrikazKorisnika from './components/PrikazKorisnika';
+import DodavanjeVozila from './components/DodavanjeVozila';
 
 
 
@@ -31,6 +32,8 @@ function App() {
         <Route path="/pocetna" element={<PocetnaStranica />} />
         <Route path="/" element={<Home />} />
         <Route path="/admin/korisnici" element={<PrikazKorisnika />} />
+        <Route path="/admin/dodajVozilo" element={<DodavanjeVozila />} />
+
       </Routes>
     </Router>
   );

@@ -10,6 +10,9 @@ const VoziloCard = ({ vozilo }) => {
     return (
         <div className="vozilo-card">
             <img src={slikaUrl} alt={vozilo.naziv} />
+            {slikaUrl.includes("default-auto.jpg") && (
+                <div>Ovo je samo primer slike jer nemamo sliku ovog auta</div>
+            )}
             <h2 className="text-xl font-bold">{vozilo.naziv}</h2>
             <p>Proizvođač: {vozilo.proizvodjac}</p>
             <p>Godina: {vozilo.god_proizvodnje}</p>

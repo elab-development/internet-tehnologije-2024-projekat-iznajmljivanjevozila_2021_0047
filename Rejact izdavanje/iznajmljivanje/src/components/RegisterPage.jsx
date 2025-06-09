@@ -95,7 +95,7 @@ function RegisterPage() {
                         onChange={handleInput}
                         required
                     >
-                        <option value="admin">Admin</option>
+                        {/* <option value="admin">Admin</option> */}
                         <option value="autentifikovan">Autentifikovan</option>
                     </select>
                 </div>
