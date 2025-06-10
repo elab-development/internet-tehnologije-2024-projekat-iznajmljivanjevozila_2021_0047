@@ -2,9 +2,10 @@ import React from 'react'
 import '../App.css';
 import axios from 'axios';
 import { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 
 const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno }) => {
+    const navigate = useNavigate();
     const slikaUrl = vozilo.slika
         ? `http://127.0.0.1:8000/storage/${vozilo.slika}`
         : '/default-auto.jpg'; // default slika ako nema
@@ -15,7 +16,7 @@ const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno 
         god_proizvodnje: vozilo.god_proizvodnje || '',
         cena_po_danu: vozilo.cena_po_danu || '',
         status: vozilo.status || '',
-        slika: null  // ovo ostaje null dok ne izabere novu sliku
+
     });
 
     const handleInputChange = (e) => {
@@ -23,39 +24,34 @@ const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno 
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e) => {
-        setFormData(prev => ({ ...prev, slika: e.target.files[0] }));
-    };
+    // const handleFileChange = (e) => {
+    //     setFormData(prev => ({ ...prev, slika: e.target.files[0] }));
+    // };
 
     const submitIzmena = async () => {
         try {
-            const data = new FormData();
             const token = sessionStorage.getItem("auth_token");
 
-            // Dodaj sve podatke u formu
-            data.append('naziv', formData.naziv);
-            data.append('proizvodjac', formData.proizvodjac);
-            data.append('god_proizvodnje', formData.god_proizvodnje);
-            data.append('cena_po_danu', formData.cena_po_danu);
-            data.append('status', formData.status);
+            // Pripremi objekat sa poljima koja menjaš
+            const payload = {
+                naziv: formData.naziv,
+                proizvodjac: formData.proizvodjac,
+                god_proizvodnje: formData.god_proizvodnje,
+                cena_po_danu: formData.cena_po_danu,
+                tip_vozila: formData.tip_vozila,
+                status: formData.status,
+            };
 
-            // Dodaj sliku ako je izabrana nova
-            if (formData.slika) {
-                data.append('slika', formData.slika);
-            }
-
-            await axios.put(`/api/vozilo/${vozilo.id_vozila}`, data, {
+            await axios.put(`/api/vozilo/${vozilo.id_vozila}`, payload, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            // Ako je slika izmenjena, prikazuj lokalni preview, inače ostavi staru
             onVoziloIzmenjeno({
                 ...vozilo,
-                ...formData,
-                slika: formData.slika ? URL.createObjectURL(formData.slika) : vozilo.slika
+                ...payload,
             });
 
             setEditMode(false);
@@ -108,12 +104,12 @@ const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno 
                     <option value="servisu">Servisu</option>
                     <option value="dostupno">Dostupno</option>
                 </select>
-                <input
+                {/* <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
                     style={{ marginBottom: "10px" }}
-                />
+                /> */}
                 <img src={slikaUrl} alt={formData.naziv} width={150} style={{ marginBottom: "10px", borderRadius: "8px" }} />
 
                 <div style={{ display: "flex", gap: "10px" }}>
@@ -140,6 +136,26 @@ const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno 
             <p>Godina: {vozilo.god_proizvodnje}</p>
             <p>Cena po danu: {vozilo.cena_po_danu}€</p>
             <p>Status: {vozilo.status}</p>
+            {tipKorisnika && tipKorisnika !== "admin" && (
+                <button
+                    onClick={() => navigate(`/rezervacija/${vozilo.id_vozila}`)}
+                    style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        padding: '8px 14px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        marginTop: '10px',
+                        fontWeight: 'bold',
+                        transition: 'background-color 0.3s'
+                    }}
+                    onMouseOver={e => (e.target.style.backgroundColor = '#0056b3')}
+                    onMouseOut={e => (e.target.style.backgroundColor = '#007bff')}
+                >
+                    Rezerviši
+                </button>
+            )}
             {tipKorisnika === "admin" && (
                 <div className="admin-dugmad" style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
                     <button
