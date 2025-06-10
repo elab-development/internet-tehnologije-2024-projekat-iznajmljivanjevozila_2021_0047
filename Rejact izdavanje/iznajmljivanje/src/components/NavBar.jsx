@@ -153,6 +153,18 @@ const NavBar = () => {
                         </Link>
                     </li>
                 )}
+                {tipKorisnika === "autentifikovan" && (
+                    <li>
+                        <Link
+                            to="/profil"
+                            style={hovered === "prefil" ? { ...styles.link, ...styles.linkHover } : styles.link}
+                            onMouseEnter={() => setHovered("profil")}
+                            onMouseLeave={() => setHovered(null)}
+                        >
+                            Moj profil
+                        </Link>
+                    </li>
+                )}
                 {tipKorisnika === "admin" && (
                     <li>
                         <Link
