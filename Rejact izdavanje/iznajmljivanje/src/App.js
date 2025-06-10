@@ -11,6 +11,7 @@ import PrikazKorisnika from './components/PrikazKorisnika';
 import DodavanjeVozila from './components/DodavanjeVozila';
 import RezervacijaVozila from './components/RezervacijaVozila';
 import MojProfil from './components/MojProfil';
+import IzmenaRezervacije from './components/IzmenaRezervacije';
 
 
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/admin/dodajVozilo" element={<DodavanjeVozila />} />
         <Route path="/rezervacija/:id_vozila" element={<RezervacijaVozila />} />
         <Route path="/profil" element={<MojProfil />} />
+        <Route path="/rezervacija/izmena/:id" element={<IzmenaRezervacije />} />
 
       </Routes>
     </Router>

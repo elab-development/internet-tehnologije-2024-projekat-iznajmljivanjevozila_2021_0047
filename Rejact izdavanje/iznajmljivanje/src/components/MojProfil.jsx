@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const MojProfil = () => {
     const [rezervacije, setRezervacije] = useState([]);
@@ -7,7 +8,7 @@ const MojProfil = () => {
     const [korisnik, setKorisnik] = useState(null);
     const [loading, setLoading] = useState(true);
     const [greska, setGreska] = useState(null);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = sessionStorage.getItem('auth_token');
@@ -24,7 +25,7 @@ const MojProfil = () => {
     useEffect(() => {
         const fetchKorisnik = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/user', {
+                const response = await axios.get('/api/user', {
                     headers: {
                         Authorization: `Bearer ${sessionStorage.getItem('auth_token')}`
                     }
@@ -39,7 +40,35 @@ const MojProfil = () => {
 
         fetchKorisnik(); // pozivanje funkcije
     }, []);
+    const handleCancel = async (idRezervacije) => {
+        if (!window.confirm('Da li ste sigurni da želite da otkažete ovu rezervaciju?')) return;
 
+        try {
+            const response = await axios.put(
+                `/api/rezervacijaOtkazivanje/${idRezervacije}`,
+                {}, // POST body može biti prazan ako nije potreban
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('auth_token')}`
+                    }
+                }
+            );
+
+            alert(response.data.message);
+
+            // Nakon uspešnog otkazivanja osveži listu rezervacija u stanju
+            // setRezervacije((prevRezervacije) =>
+            //     prevRezervacije.filter((r) => r.id_rezervacija !== idRezervacije)
+            //);
+
+        } catch (error) {
+            if (error.response) {
+                alert(error.response.data.message);
+            } else {
+                alert('Greška pri otkazivanju rezervacije.');
+            }
+        }
+    };
     return (
 
         <div style={{ maxWidth: '1200px', margin: '40px auto' }}>
@@ -56,7 +85,7 @@ const MojProfil = () => {
                     <p style={{ color: 'red' }}>{greska}</p>
                 ) : korisnik ? (
                     <>
-                        <h2>Vase profil i rezervacije</h2>
+                        <h2>Moji podaci</h2>
                         <p><strong>Ime:</strong> {korisnik.ime}</p>
                         <p><strong>Prezime:</strong> {korisnik.prezime}</p>
                         <p><strong>Email:</strong> {korisnik.email}</p>
@@ -69,7 +98,7 @@ const MojProfil = () => {
             </div>
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
-
+            <h2>Moje rezervacije</h2>
             {Array.isArray(rezervacije) && rezervacije.length > 0 ? (
                 <div style={{
                     display: 'grid',
@@ -95,6 +124,12 @@ const MojProfil = () => {
                             <p><strong>Datum završetka:</strong> {rez.Datum_zavrsetka}</p>
                             <p><strong>Status:</strong> {rez.Status_rezervacije}</p>
                             <p><strong>Cena ukupno:</strong> {rez.Cena_ukupno} RSD</p>
+                            {new Date(rez.Datum_pocetka) > new Date() && rez.Status_rezervacije === 'aktivno' && (
+                                <>
+                                    <button onClick={() => handleCancel(rez.id_rezervacija)}>Otkaži rezervaciju</button>
+                                    <button onClick={() => navigate(`/rezervacija/izmena/${rez.id_rezervacija}`)}>Izmeni rezervaciju</button>
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>
