@@ -88,7 +88,12 @@ class VoziloController extends Controller
         $vozila = $query->paginate(9);
 
         if ($vozila->isEmpty()) {
-            return response()->json(['message' => 'Nijedno vozilo nije pronađeno.'], 404);
+            return response()->json([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+                'message' => 'Nijedno vozilo nije pronađeno.'
+            ], 200);
         }
 
         return response()->json($vozila);
