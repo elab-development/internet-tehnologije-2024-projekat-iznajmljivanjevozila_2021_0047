@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vozilo;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -53,7 +54,9 @@ class VoziloController extends Controller
     public function search(Request $request)
     {
         $query = Vozilo::query();
-
+        if ($request->filled('id_vozila')) {
+            $query->where('id_vozila', $request->id_vozila);
+        }
         if ($request->filled('naziv')) {
             $query->where('naziv', 'like', '%' . $request->naziv . '%');
         }
@@ -66,7 +69,7 @@ class VoziloController extends Controller
             $query->where('cena_po_danu', '<=', $request->cena_po_danu);
         }
 
-        $vozila = $query->get();
+        $vozila = $query->paginate(9);
 
         if ($vozila->isEmpty()) {
             return response()->json(['message' => 'Nijedno vozilo nije pronađeno.'], 404);
@@ -84,43 +87,48 @@ class VoziloController extends Controller
             return response()->json(['poruka' => 'Vozilo nije pronađeno.'], 404);
         }
 
+
         // Ažuriraj polja samo ako su uneta
-        if ($request->filled('naziv')) {
+        if ($request->has('naziv')) {
             $vozilo->naziv = $request->naziv;
         }
 
-        if ($request->filled('proizvodjac')) {
+        // if ($request->input('naziv') !== null) {
+        //     $vozilo->naziv = $request->input('naziv');
+        // }
+
+        if ($request->has('proizvodjac')) {
             $vozilo->proizvodjac = $request->proizvodjac;
         }
 
-        if ($request->filled('god_proizvodnje')) {
+        if ($request->has('god_proizvodnje')) {
             $vozilo->god_proizvodnje = $request->god_proizvodnje;
         }
 
-        if ($request->filled('cena_po_danu')) {
+        if ($request->has('cena_po_danu')) {
             $vozilo->cena_po_danu = $request->cena_po_danu;
         }
 
-        if ($request->filled('tip_vozila')) {
+        if ($request->has('tip_vozila')) {
             $vozilo->tip_vozila = $request->tip_vozila;
         }
 
-        if ($request->filled('status')) {
+        if ($request->has('status')) {
             $vozilo->status = $request->status;
         }
-        if ($request->hasFile('slika')) {
-            // Obriši staru sliku ako postoji
-            if ($vozilo->slika && Storage::disk('public')->exists($vozilo->slika)) {
-                Storage::disk('public')->delete($vozilo->slika);
-            }
+        // if ($request->hasFile('slika')) {
+        //     // Obriši staru sliku ako postoji
+        //     if ($vozilo->slika && Storage::disk('public')->exists($vozilo->slika)) {
+        //         Storage::disk('public')->delete($vozilo->slika);
+        //     }
 
-            // Sačuvaj novu sliku i uzmi putanju
-            $path = $request->file('slika')->store('vozila', 'public');
+        //     // Sačuvaj novu sliku i uzmi putanju
+        //     $path = $request->file('slika')->store('vozila', 'public');
 
-            $vozilo->slika = $path;
-        }
+        //     $vozilo->slika = $path;
+        // }
 
-
+        // $saved = $vozilo->save();
         // Sačuvaj izmene
         $vozilo->save();
 

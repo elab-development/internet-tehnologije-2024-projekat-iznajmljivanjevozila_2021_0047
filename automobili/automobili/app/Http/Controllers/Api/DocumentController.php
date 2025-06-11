@@ -10,27 +10,37 @@ use Illuminate\Support\Facades\Storage;
 class DocumentController extends Controller
 {
     public function upload(Request $request)
-{
-    
-    $request->validate([
-        'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-        'naziv' => 'required|string|max:255', 
-    ]);
+    {
 
-     $file = $request->file('document');
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'naziv' => 'required|string|max:255',
+        ]);
 
-    $path = $file->store('documents'); // snima u storage/app/documents
+        $file = $request->file('document');
 
-    $document = Document::create([
-        'id_korisnika' =>  $request->user()->id,
-        'naziv' => $request->naziv, 
-        'original_name' => $file->getClientOriginalName(),
-        'path' => $path,
-    ]);
+        $path = $file->store('documents'); // snima u storage/app/documents
 
-    return response()->json([
-        'message' => 'Dokument uspešno sačuvan.',
-        'document' => $document
-    ]);
-}
+        $document = Document::create([
+            'id_korisnika' =>  $request->user()->id,
+            'naziv' => $request->naziv,
+            'original_name' => $file->getClientOriginalName(),
+            'path' => $path,
+        ]);
+
+        return response()->json([
+            'message' => 'Dokument uspešno sačuvan.',
+            'document' => $document
+        ]);
+    }
+    public function hasDocument(Request $request)
+    {
+        $korisnik = $request->user(); // autentifikovani korisnik
+
+        $imaDokument = Document::where('id_korisnika', $korisnik->id)->exists();
+
+        return response()->json([
+            'ima_dokument' => $imaDokument
+        ]);
+    }
 }
