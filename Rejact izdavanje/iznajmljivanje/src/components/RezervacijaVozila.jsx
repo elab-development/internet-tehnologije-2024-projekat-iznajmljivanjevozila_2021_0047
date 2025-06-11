@@ -16,17 +16,15 @@ const RezervacijaVozila = () => {
     useEffect(() => {
         if (!id_vozila) return;
 
-        axios.get('/api/vozilo', {
+        axios.get('/api/voziloJedno', {
             params: {
                 id_vozila: id_vozila
             }
         })
             .then(res => {
                 console.log('Dobijeno vozilo:', res.data);
-                setVozilo(res.data[0]);
-
+                setVozilo(res.data);
             })
-
             .catch(() => setError('Greška pri učitavanju vozila'));
     }, [id_vozila]);
 

@@ -13,6 +13,7 @@ import RezervacijaVozila from './components/RezervacijaVozila';
 import MojProfil from './components/MojProfil';
 import IzmenaRezervacije from './components/IzmenaRezervacije';
 import StatistikaPregled from './components/StatistikaPregled';
+import CustomBreadcrumbs from './components/CustomBreadcrumbs';
 
 
 
@@ -30,19 +31,23 @@ function App() {
     //   </Routes>
     // </Router>
     <Router>
+
       <NavBar />
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/pocetna" element={<PocetnaStranica />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/admin/korisnici" element={<PrikazKorisnika />} />
-        <Route path="/admin/dodajVozilo" element={<DodavanjeVozila />} />
-        <Route path="/rezervacija/:id_vozila" element={<RezervacijaVozila />} />
-        <Route path="/profil" element={<MojProfil />} />
-        <Route path="/rezervacija/izmena/:id" element={<IzmenaRezervacije />} />
-        <Route path="/admin/statistika" element={<StatistikaPregled />} />
-      </Routes>
+      <div style={{ paddingTop: '70px' }}>  {/* isto kao height NavBar-a */}
+        <CustomBreadcrumbs />
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/pocetna" element={<PocetnaStranica />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/admin/korisnici" element={<PrikazKorisnika />} />
+          <Route path="/admin/dodajVozilo" element={<DodavanjeVozila />} />
+          <Route path="/rezervacija/:id_vozila" element={<RezervacijaVozila />} />
+          <Route path="/profil" element={<MojProfil />} />
+          <Route path="/rezervacija/izmena/:id" element={<IzmenaRezervacije />} />
+          <Route path="/admin/statistika" element={<StatistikaPregled />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

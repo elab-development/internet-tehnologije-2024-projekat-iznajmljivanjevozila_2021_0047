@@ -67,6 +67,7 @@ const NavBar = () => {
             left: 0,
             right: 0,
             zIndex: 1000,  // da bude iznad ostalog sadržaja
+            height: '50px',
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
