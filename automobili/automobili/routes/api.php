@@ -50,7 +50,7 @@ Route::post('/vozilo/dodaj', function () {
     // Ako korisnik nije admin, vrati 403
     return response()->json(['message' => 'Forbidden'], 403);
 })->middleware('auth:sanctum');
-
+Route::get('/voziloJedno', [VoziloController::class, 'prikaziJedno']);
 // Ruta za pretragu vozila 
 Route::get('/vozilo', [VoziloController::class, 'search']);
 

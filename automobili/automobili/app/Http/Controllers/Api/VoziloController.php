@@ -51,6 +51,22 @@ class VoziloController extends Controller
             return response()->json(['message' => 'Dodavanje vozila nije uspelo. Proverite unos.'], 500);
         }
     }
+    public function prikaziJedno(Request $request)
+    {
+        $id = $request->query('id_vozila');
+
+        if (!$id) {
+            return response()->json(['message' => 'ID vozila nije prosleđen.'], 400);
+        }
+
+        $vozilo = Vozilo::find($id);
+
+        if (!$vozilo) {
+            return response()->json(['message' => 'Vozilo nije pronađeno.'], 404);
+        }
+
+        return response()->json($vozilo);
+    }
     public function search(Request $request)
     {
         $query = Vozilo::query();
