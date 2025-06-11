@@ -28,19 +28,18 @@ const PocetnaStranica = () => {
         };
 
         axios.get("/api/vozilo", { params })
-            .then(response => {
-                const data = response.data;
-                if (data.data.length === 0) {
-                    setVozila([]);
-                    setPagination({ current_page: 1, last_page: 1 }); // Reset paginacije
-                    setErrorMessage("Nema rezultata za zadate kriterijume.");
+            .then(res => {
+                if (res.data.data.length === 0) {
+                    setErrorMessage("Nema vozila po zadatom kriterijumu.");
+                    setVozila([]); // nema vozila za prikaz
+                    setPagination({ current_page: 1, last_page: 1 });
                 } else {
-                    setVozila(data.data);
+                    setErrorMessage(""); // obriši poruku o grešci ako postoji
+                    setVozila(res.data.data);
                     setPagination({
-                        current_page: data.current_page,
-                        last_page: data.last_page,
+                        current_page: res.data.current_page,
+                        last_page: res.data.last_page,
                     });
-                    setErrorMessage("");
                 }
             })
             .catch(err => {

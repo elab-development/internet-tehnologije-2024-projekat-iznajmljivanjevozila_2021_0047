@@ -1,32 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import useVozilo from '../hooks/useVozilo'; // prilagodi putanju ako treba
 
 const RezervacijaVozila = () => {
     const { id_vozila } = useParams();
     const navigate = useNavigate();
 
-    const [vozilo, setVozilo] = useState(null);
+    const { vozilo, error: fetchError } = useVozilo(id_vozila);
+    console.log('id_vozila:', id_vozila);
+    console.log('vozilo:', vozilo);
+
     const [datumPocetka, setDatumPocetka] = useState('');
     const [datumZavrsetka, setDatumZavrsetka] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
-
-    useEffect(() => {
-        if (!id_vozila) return;
-
-        axios.get('/api/voziloJedno', {
-            params: {
-                id_vozila: id_vozila
-            }
-        })
-            .then(res => {
-                console.log('Dobijeno vozilo:', res.data);
-                setVozilo(res.data);
-            })
-            .catch(() => setError('Greška pri učitavanju vozila'));
-    }, [id_vozila]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,35 +22,38 @@ const RezervacijaVozila = () => {
 
         try {
             const token = sessionStorage.getItem('auth_token');
-
-            const response = await axios.post('/api/rezervacija', {
-                id_vozila,
-                datum_pocetka: datumPocetka,
-                datum_zavrsetka: datumZavrsetka,
-            }, {
+            console.log(token);
+            const response = await fetch('http://localhost:8000/api/rezervacija', {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
+                body: JSON.stringify({
+                    id_vozila,
+                    datum_pocetka: datumPocetka,
+                    datum_zavrsetka: datumZavrsetka,
+                }),
             });
 
-            setSuccess(response.data.message);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Došlo je do greške prilikom rezervacije.');
+            }
+
+            setSuccess(data.message);
             setTimeout(() => {
                 navigate('/pocetna');
             }, 3000);
-            // Opcionalno: posle uspešne rezervacije možeš redirectovati korisnika
-            // navigate('/neka-stranica');
 
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message);
-            } else {
-                setError('Došlo je do greške prilikom rezervacije.');
-            }
+            setError(err.message);
         }
     };
-    console.log('Prikaz vozila:', vozilo);
-    if (!vozilo) return <div>Učitavanje vozila...</div>;
 
+    if (fetchError) return <div style={{ color: 'red' }}>{fetchError}</div>;
+    if (!vozilo) return <div>Učitavanje vozila...</div>;
 
     return (
         <div style={{
@@ -79,8 +69,11 @@ const RezervacijaVozila = () => {
         }}>
             {/* Leva strana - Podaci o vozilu */}
             <div style={{ flex: 1, paddingRight: '20px' }}>
-                <img src={`http://localhost:8000/storage/${vozilo.slika}`} alt={vozilo.naziv} />
-
+                <img
+                    src={`http://localhost:8000/storage/${vozilo.slika}`}
+                    alt={vozilo.naziv}
+                    style={{ maxWidth: '100%', borderRadius: '8px' }}
+                />
                 <h2 className="text-xl font-bold">{vozilo.naziv}</h2>
                 <p>Proizvođač: {vozilo.proizvodjac}</p>
                 <p>Godina: {vozilo.god_proizvodnje}</p>
@@ -153,7 +146,8 @@ const RezervacijaVozila = () => {
                 {error && <p style={{ color: 'red', marginTop: '15px' }}>{error}</p>}
                 {success && <p style={{ color: 'green', marginTop: '15px' }}>{success}</p>}
             </div>
-        </div >
+        </div>
     );
 };
+
 export default RezervacijaVozila;

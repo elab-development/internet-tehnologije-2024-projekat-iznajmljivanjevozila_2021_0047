@@ -42,7 +42,7 @@ const MojProfil = () => {
                 setRezervacije(res.data.rezervacije); // ← BITNO
 
             })
-            .catch(() => setError('Greška pri učitavanju rezervacija.'));
+            .catch(() => setError(''));
     }, []);
     useEffect(() => {
         const fetchKorisnik = async () => {

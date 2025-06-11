@@ -72,7 +72,7 @@ const StatistikaPregled = () => {
             console.log(response.data);
         } catch (err) {
             if (err.response?.data?.errors) {
-                setGreska('Greška u unosu podataka.');
+                setGreska('Greška u unosu podataka. Datum mora biti u prošlosti.');
             } else {
                 setGreska('Statistika trenutno nije dostupna.');
             }
@@ -106,7 +106,7 @@ const StatistikaPregled = () => {
                         <strong>Otkazanih rezervacija (do sada):</strong> {statistika.ukupno_otkazanih}
                     </li>
                     <li style={{ padding: '10px 0', borderBottom: '1px solid #eee' }}>
-                        <strong>Ukupni prihod:</strong> {statistika.ukupni_prihod} RSD
+                        <strong>Ukupni prihod:</strong> {statistika.ukupni_prihod} EURA
                     </li>
                     <li style={{ padding: '10px 0', borderBottom: '1px solid #eee' }}>
                         <strong>Broj otkazanih rezervacija (buduće):</strong> {statistika.broj_otkazanih}
@@ -115,7 +115,7 @@ const StatistikaPregled = () => {
                         <strong>Broj budućih rezervacija:</strong> {statistika.broj_buducih}
                     </li>
                     <li style={{ padding: '10px 0' }}>
-                        <strong>Očekivani prihod:</strong> {statistika.ocekivan_prihod} RSD
+                        <strong>Očekivani prihod:</strong> {statistika.ocekivan_prihod} EURA
                     </li>
                 </ul>
             </div>
@@ -193,7 +193,7 @@ const StatistikaPregled = () => {
                     <div style={{ marginTop: '20px' }}>
                         <h3 style={{ marginBottom: '10px' }}>Rezultati:</h3>
                         <p><strong>Broj iznajmljivanja:</strong> {rezultat.broj_iznajmljivanja}</p>
-                        <p><strong>Ukupna zarada:</strong> {rezultat.ukupna_zarada} RSD</p>
+                        <p><strong>Ukupna zarada:</strong> {rezultat.ukupna_zarada} EURA</p>
                         <p><strong>Prosečan broj dana:</strong> {rezultat.prosecan_broj_dana}</p>
                     </div>
                 )}
