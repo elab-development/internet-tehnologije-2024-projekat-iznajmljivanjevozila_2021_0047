@@ -7,6 +7,7 @@ const LoginPage = () => {
         email: "",
         lozinka: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
     let navigate = useNavigate();
     function handleInput(e) {
         // //console.log(e);
@@ -31,9 +32,10 @@ const LoginPage = () => {
             .catch(err => {
                 if (err.response) {
                     console.log(err.response.data);
-
+                    setErrorMessage(err.response.data.message || "Došlo je do greške pri prijavi.");
                 } else {
                     console.log(err);
+                    setErrorMessage("Greška u mreži ili serveru.");
                 }
             });
     }
@@ -63,6 +65,7 @@ const LoginPage = () => {
                         required
                     />
                 </div>
+                {errorMessage && <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>}
                 <button type="submit">Prijavi se</button>
             </form>
             <p>

@@ -56,45 +56,148 @@ const IzmenaRezervacije = ({ onClose, onUpdateSuccess }) => {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '400px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
-            <h2>Izmeni rezervaciju</h2>
-            {greska && <p style={{ color: 'red' }}>{greska}</p>}
-            {uspeh && <p style={{ color: 'green' }}>{uspeh}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>
-                        Datum početka: <small style={{ color: '#555' }}>({datumPocetka || 'nije postavljeno'})</small>
-                    </label><br />
-                    <input
-                        type="date"
-                        value={datumPocetka}
-                        onChange={e => setDatumPocetka(e.target.value)}
-                        required
-                        min={new Date().toISOString().split('T')[0]}
-                    />
-                </div>
-                <div>
-                    <label>
-                        Datum završetka: <small style={{ color: '#555' }}>({datumZavrsetka || 'nije postavljeno'})</small>
-                    </label><br />
-                    <input
-                        type="date"
-                        value={datumZavrsetka}
-                        onChange={e => setDatumZavrsetka(e.target.value)}
-                        required
-                        min={datumPocetka || new Date().toISOString().split('T')[0]}
-                    />
-                </div>
-                <button type="submit" disabled={loading} style={{ marginTop: '10px' }}>
-                    {loading ? 'Čekajte...' : 'Sačuvaj izmene'}
-                </button>
-            </form>
-            <button
-                onClick={() => navigate('/profil')}
-                style={{ marginTop: '10px' }}
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '80vh',
+                backgroundColor: '#eef2f7',
+                padding: '20px',
+            }}
+        >
+            <div
+                style={{
+                    backgroundColor: '#fff',
+                    padding: '25px 30px',
+                    borderRadius: '10px',
+                    boxShadow: '0 3px 12px rgba(0, 0, 0, 0.1)',
+                    width: '100%',
+                    maxWidth: '400px',
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    color: '#333',
+                }}
             >
-                Zatvori
-            </button>
+                <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#2c3e50' }}>
+                    Izmeni rezervaciju
+                </h2>
+
+                {greska && (
+                    <p
+                        style={{
+                            color: 'red',
+                            marginBottom: '15px',
+                            textAlign: 'center',
+                            fontWeight: '600',
+                        }}
+                    >
+                        {greska}
+                    </p>
+
+                )}
+                {uspeh && (
+                    <p
+                        style={{
+                            color: 'green',
+                            marginBottom: '15px',
+                            textAlign: 'center',
+                            fontWeight: '600',
+                        }}
+                    >
+                        {uspeh}
+                    </p>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                    <div style={{ marginBottom: '18px' }}>
+                        <label style={{ fontWeight: '600', display: 'block', marginBottom: '6px' }}>
+                            Datum početka: <small style={{ color: '#555' }}>({datumPocetka || 'nije postavljeno'})</small>
+                        </label>
+                        <input
+                            type="date"
+                            value={datumPocetka}
+                            onChange={(e) => setDatumPocetka(e.target.value)}
+                            required
+                            min={new Date().toISOString().split('T')[0]}
+                            style={{
+                                width: '100%',
+                                padding: '8px 10px',
+                                borderRadius: '6px',
+                                border: '1px solid #ccc',
+                                fontSize: '1rem',
+                                boxSizing: 'border-box',
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: '20px' }}>
+                        <label style={{ fontWeight: '600', display: 'block', marginBottom: '6px' }}>
+                            Datum završetka: <small style={{ color: '#555' }}>({datumZavrsetka || 'nije postavljeno'})</small>
+                        </label>
+                        <input
+                            type="date"
+                            value={datumZavrsetka}
+                            onChange={(e) => setDatumZavrsetka(e.target.value)}
+                            required
+                            min={datumPocetka || new Date().toISOString().split('T')[0]}
+                            style={{
+                                width: '100%',
+                                padding: '8px 10px',
+                                borderRadius: '6px',
+                                border: '1px solid #ccc',
+                                fontSize: '1rem',
+                                boxSizing: 'border-box',
+                            }}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            width: '100%',
+                            padding: '12px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            backgroundColor: loading ? '#95a5a6' : '#2980b9',
+                            color: '#fff',
+                            fontWeight: '700',
+                            fontSize: '1.1rem',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            transition: 'background-color 0.3s ease',
+                        }}
+                    >
+                        {loading ? 'Čekajte...' : 'Sačuvaj izmene'}
+                    </button>
+                </form>
+
+                <button
+                    onClick={() => navigate('/profil')}
+                    style={{
+                        marginTop: '15px',
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #2980b9',
+                        backgroundColor: 'white',
+                        color: '#2980b9',
+                        fontWeight: '600',
+                        fontSize: '1rem',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s ease, color 0.3s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#2980b9';
+                        e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'white';
+                        e.currentTarget.style.color = '#2980b9';
+                    }}
+                >
+                    Zatvori
+                </button>
+            </div>
         </div>
     );
 };

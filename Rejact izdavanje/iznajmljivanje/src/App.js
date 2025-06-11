@@ -12,6 +12,7 @@ import DodavanjeVozila from './components/DodavanjeVozila';
 import RezervacijaVozila from './components/RezervacijaVozila';
 import MojProfil from './components/MojProfil';
 import IzmenaRezervacije from './components/IzmenaRezervacije';
+import StatistikaPregled from './components/StatistikaPregled';
 
 
 
@@ -40,7 +41,7 @@ function App() {
         <Route path="/rezervacija/:id_vozila" element={<RezervacijaVozila />} />
         <Route path="/profil" element={<MojProfil />} />
         <Route path="/rezervacija/izmena/:id" element={<IzmenaRezervacije />} />
-
+        <Route path="/admin/statistika" element={<StatistikaPregled />} />
       </Routes>
     </Router>
   );

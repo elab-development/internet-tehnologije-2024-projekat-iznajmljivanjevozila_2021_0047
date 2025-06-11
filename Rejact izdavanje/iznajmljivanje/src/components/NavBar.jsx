@@ -177,6 +177,19 @@ const NavBar = () => {
                         </Link>
                     </li>
                 )}
+                {tipKorisnika === "admin" && (
+                    <li>
+                        <Link
+                            to="/admin/statistika"
+                            style={hovered === "statistika" ? { ...styles.link, ...styles.linkHover } : styles.link}
+                            onMouseEnter={() => setHovered("statistika")}
+                            onMouseLeave={() => setHovered(null)}
+                        >
+                            Statistika
+                        </Link>
+                    </li>
+                )}
+
                 {window.sessionStorage.getItem("auth_token") == null ? (
                     <>
                         <li>

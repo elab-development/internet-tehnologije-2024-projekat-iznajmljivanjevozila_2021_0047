@@ -196,3 +196,50 @@ button[type="submit"]:hover {
 .login-container p a:hover {
   text-decoration: underline;
 }
+
+.filter-container {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  background-color: #222;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+/* css za filter */
+.filter-container {
+  background-color: #f9f6ef;
+  /* nežna krem pozadina */
+  padding: 20px 30px;
+  border-radius: 15px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filter-container input {
+  background-color: #fff;
+  /* bela pozadina input polja */
+  border: 2px solid #c8b77c;
+  /* mekša zlatna ivica */
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 16px;
+  color: #5a4631;
+  box-shadow: none;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 250px;
+  /* malo veća širina */
+  max-width: 100%;
+}
+
+.filter-container input:focus {
+  border-color: #a08a4d;
+  /* tamnija zlatna na fokus */
+  box-shadow: 0 0 8px 2px #c8b77c88;
+  outline: none;
+}

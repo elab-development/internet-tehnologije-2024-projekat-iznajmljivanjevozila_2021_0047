@@ -101,7 +101,7 @@ const VoziloCard = ({ vozilo, tipKorisnika, onVoziloObrisano, onVoziloIzmenjeno 
                     style={{ marginBottom: "10px", width: "100%", padding: "8px" }}
                 >
                     <option value="">-- Odaberi status --</option>
-                    <option value="servisu">Servisu</option>
+                    <option value="u servisu">U servisu</option>
                     <option value="dostupno">Dostupno</option>
                 </select>
                 {/* <input
