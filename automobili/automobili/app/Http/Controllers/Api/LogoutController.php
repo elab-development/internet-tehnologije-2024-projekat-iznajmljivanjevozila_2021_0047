@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 class LogoutController extends Controller
 {
-public function logout(Request $request)
+    public function logout(Request $request)
     {
-        // Briše samo trenutni token korisnika (ako koristiš Laravel Sanctum)
+        // Briše samo trenutni token korisnika 
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([

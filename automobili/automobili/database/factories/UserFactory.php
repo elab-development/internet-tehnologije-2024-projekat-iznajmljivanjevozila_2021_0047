@@ -32,11 +32,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'lozinka' => static::$password ??= Hash::make('password'),
             'tip_korisnika'=>fake()->randomElement(['autentifikovan', 'admin']),
-            //'two_factor_secret' => null,
-            //'two_factor_recovery_codes' => null,
             
-            //'profile_photo_path' => null,
-            //'current_team_id' => null,
         ];
     }
 

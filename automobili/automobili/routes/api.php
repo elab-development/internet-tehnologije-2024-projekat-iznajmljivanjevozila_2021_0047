@@ -10,7 +10,10 @@ use App\Http\Controllers\Api\LogoutController;
 use App\Http\Controllers\Api\DocumentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CurrencyController;
 
+
+// vraca trenutno ulogovane korisnike
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -27,10 +30,7 @@ Route::get('/users', function () {
     if (request()->user()->tip_korisnika === 'admin') {
         // Vraćanje svih korisnika u bazi
         return app(AdminController::class)->getUsers();
-        //return action([App\Http\Controllers\Api\AdminController::class, 'getUsers']);
-        //return response()->json(App\Models\User::all());
-        //    $controller = new \App\Http\Controllers\Api\AdminController();
-        //    return $controller->getUsers();
+        
     }
 
 
@@ -39,7 +39,7 @@ Route::get('/users', function () {
 })->middleware('auth:sanctum');
 
 
-//Route::post('/vozilo/dodaj', [VoziloController::class, 'store']);
+
 Route::post('/vozilo/dodaj', function () {
 
     if (request()->user()->tip_korisnika === 'admin') {
@@ -81,6 +81,7 @@ Route::put('/rezervacija/{id}', [RezervacijaController::class, 'update'])
 
 Route::put('/rezervacijaOtkazivanje/{id}', [RezervacijaController::class, 'cancel'])
     ->middleware('auth:sanctum');
+    
 Route::post('/statistika', function (Request $request) {
     // Proverava da li je korisnik admin pre nego što pozove kontroler
     if ($request->user()->tip_korisnika === 'admin') {
@@ -99,3 +100,5 @@ Route::middleware('auth:sanctum')->post('/logout', [LogoutController::class, 'lo
 
 Route::middleware('auth:sanctum')->post('/upload-document', [DocumentController::class, 'upload']);
 Route::middleware('auth:sanctum')->get('/dokument/postoji', [DocumentController::class, 'hasDocument']);
+Route::get('/valute', [CurrencyController::class, 'getRates']);
+Route::get('/statistika/po-vozilu', [StatistikaVozilaController::class, 'brojRezervacijaPoVozilu']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Statistika;
@@ -64,20 +65,20 @@ class StatistikaVozilaController extends Controller
     public function ukupnaStatistika()
     {
         // Broj izvršenih (neotkazanih i završених) rezervacija do danas
-        $ukupnoIzvrsenihSad = Rezervacija::where('status_rezervacije', '!=', 'otkazana')
+        $ukupnoIzvrsenihSad = Rezervacija::where('status_rezervacije', '!=', 'otkazano')
             ->whereDate('datum_zavrsetka', '<=', now())
             ->count();
-        $ukupnoOtkazanihSad = Rezervacija::where('status_rezervacije', '!=', 'otkazana')
+        $ukupnoOtkazanihSad = Rezervacija::where('status_rezervacije', 'otkazano')
             ->whereDate('datum_zavrsetka', '<=', now())
             ->count();
 
         // Ukupni prihod od svih izvršenih rezervacija do danas
-        $ukupniPrihod = Rezervacija::where('status_rezervacije', '!=', 'otkazana')
+        $ukupniPrihod = Rezervacija::where('status_rezervacije', '!=', 'otkazano')
             ->whereDate('datum_zavrsetka', '<=', now())
             ->sum('cena_ukupno');
 
         // Broj otkazanih rezervacija u narednom periodu (npr. od danas nadalje)
-        $brojOtkazanih = Rezervacija::where('status_rezervacije', 'otkazana')
+        $brojOtkazanih = Rezervacija::where('status_rezervacije', 'otkazano')
             ->whereDate('datum_pocetka', '>=', now())
             ->count();
 
@@ -85,7 +86,7 @@ class StatistikaVozilaController extends Controller
         $brojBuducih = Rezervacija::whereIn('status_rezervacije', ['aktivno', 'na cekanju'])
             ->whereDate('datum_pocetka', '>=', now())
             ->count();
-        $ocekivaniUkupniPrihod = Rezervacija::where('status_rezervacije', '!=', 'otkazana')
+        $ocekivaniUkupniPrihod = Rezervacija::where('status_rezervacije', '!=', 'otkazano')
             ->whereDate('datum_zavrsetka', '>', now())
             ->sum('cena_ukupno');
 
@@ -97,5 +98,15 @@ class StatistikaVozilaController extends Controller
             'broj_buducih' => $brojBuducih,
             'ocekivan_prihod' => $ocekivaniUkupniPrihod,
         ]);
+    }
+    public function brojRezervacijaPoVozilu()
+    {
+        $rezultati = DB::table('rezervacija')
+            ->join('vozilo', 'rezervacija.id_vozila', '=', 'vozilo.id_vozila')
+            ->select('vozilo.naziv', DB::raw('count(rezervacija.id_rezervacija) as broj_rezervacija'))
+            ->groupBy('vozilo.id_vozila', 'vozilo.naziv')
+            ->get();
+
+        return response()->json($rezultati);
     }
 }

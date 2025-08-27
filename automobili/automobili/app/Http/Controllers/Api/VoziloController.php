@@ -114,9 +114,6 @@ class VoziloController extends Controller
             $vozilo->naziv = $request->naziv;
         }
 
-        // if ($request->input('naziv') !== null) {
-        //     $vozilo->naziv = $request->input('naziv');
-        // }
 
         if ($request->has('proizvodjac')) {
             $vozilo->proizvodjac = $request->proizvodjac;
@@ -137,19 +134,7 @@ class VoziloController extends Controller
         if ($request->has('status')) {
             $vozilo->status = $request->status;
         }
-        // if ($request->hasFile('slika')) {
-        //     // Obriši staru sliku ako postoji
-        //     if ($vozilo->slika && Storage::disk('public')->exists($vozilo->slika)) {
-        //         Storage::disk('public')->delete($vozilo->slika);
-        //     }
 
-        //     // Sačuvaj novu sliku i uzmi putanju
-        //     $path = $request->file('slika')->store('vozila', 'public');
-
-        //     $vozilo->slika = $path;
-        // }
-
-        // $saved = $vozilo->save();
         // Sačuvaj izmene
         $vozilo->save();
 

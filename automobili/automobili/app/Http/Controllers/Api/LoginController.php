@@ -26,7 +26,7 @@ class LoginController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
-        // proevra mail
+        // proevra korisika
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -53,7 +53,5 @@ class LoginController extends Controller
             'status' => 'error',
             'message' => 'Pogrešan e-mail ili lozinka.',
         ], 401);
-
-        
     }
 }
