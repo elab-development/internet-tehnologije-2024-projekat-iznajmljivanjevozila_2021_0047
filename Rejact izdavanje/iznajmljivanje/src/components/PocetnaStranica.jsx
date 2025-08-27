@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import VoziloCard from "./VoziloCard"; // pretpostavljam da je tako
+import VoziloCard from "./VoziloCard";
+import { useCurrency } from "./Valute"; 
 
 const PocetnaStranica = () => {
+    // currency context
+    const { currency, setCurrency, rates, convert, loading: loadingRates } = useCurrency();
+
+    // stanje
     const [vozila, setVozila] = useState([]);
     const [filters, setFilters] = useState({
         naziv: "",
@@ -18,6 +23,8 @@ const PocetnaStranica = () => {
     const [tipKorisnika, setTipKorisnika] = useState(null);
     const [debouncedFilters, setDebouncedFilters] = useState(filters);
     const debounceTimeout = useRef(null);
+
+    // funkcija za fetch vozila
     const fetchVozila = (page = 1, activeFilters) => {
         setLoading(true);
         setErrorMessage("");
@@ -31,10 +38,10 @@ const PocetnaStranica = () => {
             .then(res => {
                 if (res.data.data.length === 0) {
                     setErrorMessage("Nema vozila po zadatom kriterijumu.");
-                    setVozila([]); // nema vozila za prikaz
+                    setVozila([]);
                     setPagination({ current_page: 1, last_page: 1 });
                 } else {
-                    setErrorMessage(""); // obriši poruku o grešci ako postoji
+                    setErrorMessage("");
                     setVozila(res.data.data);
                     setPagination({
                         current_page: res.data.current_page,
@@ -46,20 +53,16 @@ const PocetnaStranica = () => {
                 console.error("Greška pri učitavanju vozila:", err);
                 setErrorMessage("Došlo je do greške pri učitavanju podataka.");
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .finally(() => setLoading(false));
     };
 
-
-    // Učitaj tip korisnika (tvoj postojeći kod)
+    // fetch korisnika i tip korisnika
     useEffect(() => {
         const token = sessionStorage.getItem("auth_token");
         if (!token) {
             setTipKorisnika(null);
             return;
         }
-
         axios.get("/api/user", {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -67,33 +70,34 @@ const PocetnaStranica = () => {
             .catch(err => console.error("Greška pri dohvaćanju korisnika", err));
     }, []);
 
-    // Učitaj vozila na prvu i kad se filteri ili stranica promene
+    // fetch vozila na promenu filtera ili stranice
     useEffect(() => {
         fetchVozila(pagination.current_page, debouncedFilters);
     }, [debouncedFilters, pagination.current_page]);
 
-
-    // Handle input promene filtera
+    // debounce i update filtera
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters(prev => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [name]: value,
         }));
+
         if (debounceTimeout.current) {
             clearTimeout(debounceTimeout.current);
         }
+
         debounceTimeout.current = setTimeout(() => {
             setDebouncedFilters(prev => ({
                 ...prev,
                 [name]: value,
             }));
         }, 500);
-        // Resetuj stranicu na 1 kad menjamo filter
+
         setPagination(prev => ({ ...prev, current_page: 1 }));
     };
 
-    // Navigacija paginacije
+    // promena stranice
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= pagination.last_page) {
             setPagination(prev => ({ ...prev, current_page: newPage }));
@@ -105,6 +109,21 @@ const PocetnaStranica = () => {
             <div className="header-image-container">
                 <img src="/pocetna.png" alt="Pregled svih vozila" className="header-image" />
                 <h1 className="header-text">Pregled svih vozila</h1>
+            </div>
+
+            {/* Dropdown za valutu */}
+            <div style={{ margin: '15px 0' }}>
+                <label htmlFor="currency-select">Izaberite valutu: </label>
+                <select
+                    id="currency-select"
+                    value={currency}
+                    onChange={e => setCurrency(e.target.value)}
+                    disabled={loadingRates}
+                >
+                    {Object.keys(rates).map(key => (
+                        <option key={key} value={key}>{key}</option>
+                    ))}
+                </select>
             </div>
 
             {/* Filter forma */}
@@ -132,20 +151,22 @@ const PocetnaStranica = () => {
                 />
             </div>
 
-            {/* Prikaz poruke ako nema rezultata ili učitavanje */}
+            {/* Poruke i učitavanje */}
             {loading && <p>Učitavanje vozila...</p>}
             {errorMessage && !loading && <p>{errorMessage}</p>}
 
             {/* Prikaz vozila */}
-            {vozila.length > 0 ? (
+            {vozila.length > 0 && (
                 <div className="pocetna-grid">
                     {vozila.map(vozilo => (
                         <VoziloCard
                             key={vozilo.id_vozila}
                             vozilo={vozilo}
                             tipKorisnika={tipKorisnika}
-                            onVoziloObrisano={(id) => setVozila(prev => prev.filter(v => v.id_vozila !== id))}
-                            onVoziloIzmenjeno={(izmenjenoVozilo) =>
+                            convert={convert}
+                            currency={currency}
+                            onVoziloObrisano={id => setVozila(prev => prev.filter(v => v.id_vozila !== id))}
+                            onVoziloIzmenjeno={izmenjenoVozilo =>
                                 setVozila(prev =>
                                     prev.map(v =>
                                         v.id_vozila === izmenjenoVozilo.id_vozila ? izmenjenoVozilo : v
@@ -155,9 +176,9 @@ const PocetnaStranica = () => {
                         />
                     ))}
                 </div>
-            ) : null}
+            )}
 
-            {/* Pagination Controls */}
+            {/* Pagination */}
             {vozila.length > 0 && (
                 <div className="pagination-controls">
                     <button
@@ -180,4 +201,3 @@ const PocetnaStranica = () => {
 };
 
 export default PocetnaStranica;
-

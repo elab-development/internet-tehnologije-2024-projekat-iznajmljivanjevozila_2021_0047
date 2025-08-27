@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const StatistikaPregled = () => {
     const [vozila, setVozila] = useState([]);
@@ -13,7 +14,10 @@ const StatistikaPregled = () => {
     const [loadingUk, setLoadingUk] = useState(true);
     const [greskaUk, setGreskaUk] = useState(null);
 
-
+    // NOVO: stanje za statistiku po vozilu (graf)
+    const [statistikaPoVozilu, setStatistikaPoVozilu] = useState([]);
+    const [loadingPoVozilu, setLoadingPoVozilu] = useState(true);
+    const [greskaPoVozilu, setGreskaPoVozilu] = useState(null);
 
     useEffect(() => {
         const token = sessionStorage.getItem('auth_token');
@@ -21,15 +25,15 @@ const StatistikaPregled = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
-                console.log('Podaci sa servera:', res.data);
-                setVozila(res.data.data);  // <--- ispravljeno ovde
+                setVozila(res.data.data);
             })
             .catch(err => console.error('Greška pri učitavanju vozila:', err));
     }, []);
+
     useEffect(() => {
         const token = sessionStorage.getItem('auth_token');
-        console.log('Token za statistiku:', token);
 
+        // Učitavanje ukupne statistike
         fetch('http://localhost:8000/api/statistikaUkupna', {
             method: 'GET',
             headers: {
@@ -42,16 +46,36 @@ const StatistikaPregled = () => {
                 return res.json();
             })
             .then(data => {
-                console.log('Primljeni podaci:', data);
                 setStatistika(data);
                 setLoadingUk(false);
             })
             .catch(err => {
-                console.error('Greška pri fetch-u statistike:', err);
                 setGreskaUk(err.message);
                 setLoadingUk(false);
             });
+
+        // NOVO: Učitavanje statistike po vozilu (broj rezervacija)
+        fetch('http://localhost:8000/api/statistika/po-vozilu', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Greška u učitavanju statistike po vozilu');
+                return res.json();
+            })
+            .then(data => {
+                setStatistikaPoVozilu(data);
+                setLoadingPoVozilu(false);
+            })
+            .catch(err => {
+                setGreskaPoVozilu(err.message);
+                setLoadingPoVozilu(false);
+            });
     }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setGreska('');
@@ -69,7 +93,6 @@ const StatistikaPregled = () => {
             });
 
             setRezultat(response.data);
-            console.log(response.data);
         } catch (err) {
             if (err.response?.data?.errors) {
                 setGreska('Greška u unosu podataka. Datum mora biti u prošlosti.');
@@ -80,9 +103,12 @@ const StatistikaPregled = () => {
             setLoading(false);
         }
     };
-    if (loadingUk) return <p>Učitavanje statistike...</p>;
+
+    if (loadingUk || loadingPoVozilu) return <p>Učitavanje statistike...</p>;
     if (greskaUk) return <p style={{ color: 'red' }}>{greskaUk}</p>;
-    if (!statistika) return null
+    if (greskaPoVozilu) return <p style={{ color: 'red' }}>{greskaPoVozilu}</p>;
+    if (!statistika) return null;
+
     return (
         <div style={{
             maxWidth: '600px',
@@ -120,13 +146,27 @@ const StatistikaPregled = () => {
                 </ul>
             </div>
 
-            {/* Forma za pregled statistike */}
+            {/* NOVO: Grafikon rezervacija po vozilu */}
+            <div style={{ marginBottom: '40px' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#2c3e50' }}>Broj rezervacija po vozilu</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={statistikaPoVozilu} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <XAxis dataKey="naziv" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="broj_rezervacija" fill="#8884d8" />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Forma za pregled statistike pojedinačnih vozila */}
             <div style={{
                 backgroundColor: '#f8f8f8',
                 padding: '20px',
                 borderRadius: '10px'
             }}>
-                <h2 style={{ marginBottom: '20px', color: '#2c3e50' }}>Pregled statistike pojedincanih vozila</h2>
+                <h2 style={{ marginBottom: '20px', color: '#2c3e50' }}>Pregled statistike pojedinačnih vozila</h2>
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '15px' }}>
                         <label style={{ display: 'block', marginBottom: '5px' }}>Vozilo:</label>
@@ -195,6 +235,26 @@ const StatistikaPregled = () => {
                         <p><strong>Broj iznajmljivanja:</strong> {rezultat.broj_iznajmljivanja}</p>
                         <p><strong>Ukupna zarada:</strong> {rezultat.ukupna_zarada} EURA</p>
                         <p><strong>Prosečan broj dana:</strong> {rezultat.prosecan_broj_dana}</p>
+
+                        <div style={{ marginTop: '30px' }}>
+                            <h3 style={{ marginBottom: '10px' }}>Vizualizacija statistike</h3>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <BarChart
+                                    data={[
+                                        { naziv: 'Broj iznajmljivanja', vrednost: rezultat.broj_iznajmljivanja },
+                                        { naziv: 'Ukupna zarada', vrednost: rezultat.ukupna_zarada },
+                                        { naziv: 'Prosečan broj dana', vrednost: rezultat.prosecan_broj_dana },
+                                    ]}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                >
+                                    <XAxis dataKey="naziv" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="vrednost" fill="#82ca9d" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 )}
             </div>

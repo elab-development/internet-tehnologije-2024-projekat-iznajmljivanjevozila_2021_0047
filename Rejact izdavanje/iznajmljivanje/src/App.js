@@ -21,15 +21,7 @@ import CustomBreadcrumbs from './components/CustomBreadcrumbs';
 
 function App() {
   return (
-    // <Router>
-    //   <Routes>
-    //     <Route path="/login" element={<LoginPage />} />
-    //     <Route path="/register" element={<RegisterPage />} />
-    //     {/* možeš dodati i početnu stranicu */}
-    //     <Route path="/pocetna" element={<PocetnaStranica />} />
-
-    //   </Routes>
-    // </Router>
+    
     <Router>
 
       <NavBar />
